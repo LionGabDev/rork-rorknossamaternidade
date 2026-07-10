@@ -8,8 +8,7 @@ struct OnboardingContainerView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.cream
-                .ignoresSafeArea()
+            OnboardingBackground()
 
             VStack(spacing: 0) {
                 if viewModel.currentStep != .welcome && viewModel.currentStep != .paywall {

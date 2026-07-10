@@ -13,9 +13,6 @@ struct WelcomeView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.cream
-                .ignoresSafeArea()
-
             VStack(spacing: 0) {
                 Spacer()
 
@@ -55,15 +52,28 @@ struct WelcomeView: View {
 
                 if showButton {
                     Button {
+                        HapticFeedback.impact(.medium)
                         onStart()
                     } label: {
-                        Text("Estou pronta")
-                            .font(AppTheme.sansFont(.body, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 18)
-                            .background(AppTheme.rose)
-                            .clipShape(.rect(cornerRadius: 14))
+                        HStack(spacing: 8) {
+                            Text("Estou pronta")
+                                .font(AppTheme.sansFont(.body, weight: .semibold))
+
+                            Image(systemName: "arrow.right")
+                                .font(.body.weight(.semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 18)
+                        .background(
+                            LinearGradient(
+                                colors: [AppTheme.rose, AppTheme.roseDark],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(.rect(cornerRadius: 16))
+                        .shadow(color: AppTheme.rose.opacity(0.25), radius: 8, y: 3)
                     }
                     .padding(.horizontal, 28)
                     .padding(.bottom, 50)

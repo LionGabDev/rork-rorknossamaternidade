@@ -5,10 +5,11 @@ struct ContentView: View {
     @State private var journal = JournalService()
     @State private var premiumService = PremiumService()
     @State private var inspirationService = InspirationService()
-    @State private var appPhase: AppPhase = .loading
+    @State private var appPhase: AppPhase = .splash
+    @State private var isDataReady: Bool = false
 
     nonisolated private enum AppPhase {
-        case loading
+        case splash
         case onboarding
         case home
     }
@@ -16,13 +17,11 @@ struct ContentView: View {
     var body: some View {
         Group {
             switch appPhase {
-            case .loading:
-                ZStack {
-                    AppTheme.cream
-                        .ignoresSafeArea()
-                    ProgressView()
-                        .tint(AppTheme.rose)
+            case .splash:
+                SplashScreenView {
+                    completeSplashIfReady()
                 }
+                .zIndex(1)
 
             case .onboarding:
                 OnboardingContainerView(storage: storage, premiumService: premiumService) {
@@ -40,7 +39,8 @@ struct ContentView: View {
             await premiumService.checkEntitlement()
             storage.syncPremium(premiumService.isPremium)
             wireJournalReset()
-            resolvePhase()
+            isDataReady = true
+            completeSplashIfReady()
         }
         .onChange(of: storage.profile.hasCompletedOnboarding) { _, newValue in
             if !newValue {
@@ -56,6 +56,13 @@ struct ContentView: View {
             Task { @MainActor in
                 journal?.resetAll()
             }
+        }
+    }
+
+    private func completeSplashIfReady() {
+        guard appPhase == .splash, isDataReady else { return }
+        withAnimation(.easeInOut(duration: 0.5)) {
+            resolvePhase()
         }
     }
 
